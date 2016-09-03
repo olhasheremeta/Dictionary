@@ -1,9 +1,15 @@
-var express = require('express');
-var serveStatic = require('serve-static');
-var path = require('path');
-var bodyParser = require('body-parser')
+const express = require('express');
+const serveStatic = require('serve-static');
+const path = require('path');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const config = require('./config');
 
-var app = express();
+const Word = require('./models/Word');
+
+const app = express();
+mongoose.connect('mongodb://'+ config.user +':' + config.password
+  + '@ds017776.mlab.com:17776/dictionary');
 
 app.use(serveStatic(__dirname + '/../client'));
 app.use(bodyParser.json());
@@ -18,12 +24,8 @@ app.listen(3000, function () {
 
 app.get('/getEntry', function(req, res) {
   console.log(req.query);
-  //get word from db
-  res.json({
-    en: 'Harry Potter',
-    de: 'Harry Potter',
-    pl: 'Harry Potter',
-    ru: 'Harry Potter',
-    ua: 'Harry Potter',
-  });
+
+  Word.find({ eng: 'Won-Won' })
+    .then(docs => res.json(docs[0]))
+    .catch(() => res.send(500));
 });
