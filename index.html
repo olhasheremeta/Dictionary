@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Dictionary</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="main.css">
+	<script src='lib/jquery.js'></script>
+	<script src='main.js'></script>
+
+</head>
+<body>
+	<div class="container">
+		<div class="header">
+			<h1>Dictionary of Proper Names</h1>
+			<p>By Olha Sheremeta</p>
+		</div>
+		<div class="main">
+			<div id="lang">
+				<select size="1" id="language">
+				   <option value="English">English</option>
+				   <option value="German">German </option>
+				   <option value="Polish">Polish</option>
+				   <option value="Russian">Russian </option>
+				   <option value="Ukrainian">Ukrainian </option>
+				 </select>
+				 <input type="text" id="search" placeholder="Start typing a name">
+				 <button type="submit" id="translate">Translate</button>
+			 </div>
+
+			 <table>
+				 <thead>
+					 <tr>
+						 <th>English</th>
+						 <th>German</th>
+						 <th>Polish</th>
+						 <th>Russian</th>
+						 <th>Ukrainian</th>
+						 <th></th>
+					 </tr>
+				 </thead>
+				 <tbody id="results"></tbody>
+			 </table>
+		</div>
+		<div class="footer">
+			<p id="copy">&copy; Olha Sheremeta</p>
+			<p>Lviv, 2016</p>
+		</div>
+	</div>
+
+	<div id="editing-modal">
+		<div class="modal-body">
+			<div class="row">
+				<div class="label">English:</div>
+				<div><input class="editing-input" type="text"></div>
+			</div>
+			<div class="row">
+				<div class="label">German:</div>
+				<div><input class="editing-input" type="text"></div>
+			</div>
+			<div class="row">
+				<div class="label">Polish:</div>
+				<div><input class="editing-input" type="text"></div>
+			</div>
+			<div class="row">
+				<div class="label">Russian:</div>
+				<div><input class="editing-input" type="text"></div>
+			</div>
+			<div class="row">
+				<div class="label">Ukrainian:</div>
+				<div><input class="editing-input" type="text"></div>
+			</div>
+			<div class="row buttons">
+				<button id="save-editing">Save</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
