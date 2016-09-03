@@ -21,45 +21,76 @@ function hideEditingModal(){
 function addEditingTD(buffer, entry) {
 	const td = document.createElement('td');
 	const button = document.createElement('button');
+	button.innerHTML = 'Edit';
 	button.addEventListener('click', event => {
 		showEditingModal();
 		const inputs = document.getElementsByClassName('editing-input');
-		Object.keys(entry).forEach((key, i) => {
-			inputs[i].value = entry[key];
-		});
+		const keys = Object.keys(entry);
+		for (let i = 1; i <= keys.length; i++) {
+			inputs[i - 1].value = entry[keys[i]];
+		}
 	});
 	td.appendChild(button);
 	buffer.appendChild(td);
 }
 
-function addTranslations(buff, entry) {
-	Object.keys(entry).forEach(key => {
-	 const td = document.createElement('td');
-	 td.innerHTML = entry[key];
-	 buff.appendChild(td);
-	});
+function addTranslations(tr, entry) {
+	const template = '<td>' + entry.eng + '</td>' +
+									 '<td>' + entry.ukr + '</td>' +
+									 '<td>' + entry.ger + '</td>' +
+									 '<td>' + entry.pol + '</td>' +
+									 '<td>' + entry.rus + '</td>';
+	tr.innerHTML = template;
 }
 
 function createRow(entry) {
 	const tr = document.createElement('tr');
 	const buffer = document.createDocumentFragment();
-	addTranslations(buffer, entry);
+	addTranslations(tr, entry);
 	addEditingTD(buffer, entry);
 	tr.appendChild(buffer);
-	document.getElementById('results').appendChild(tr);
+	const results = document.getElementById('results')
+	results.insertBefore(tr, results.childNodes[0]);
+}
+
+function cleanInput() {
+	const input = document.getElementById('search');
+	input.value = '';
+	input.focus();
+	document.getElementById('translate').disabled = true;
 }
 
 function onTranslateBtnClick() {
 	var languageValue = document.getElementById('language').value;
 	var searchValue = document.getElementById('search').value;
+	if (!searchValue) return;
 
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener('load', () => {
-		var object = JSON.parse(xhr.response);
-	  createRow(object);
+		if (xhr.response) {
+			var object = JSON.parse(xhr.response);
+			createRow(object);
+		} else {
+			console.log('Error: no such an entry in the data base');
+		}
+		cleanInput();
 	});
 	xhr.open('GET', '/getEntry?lang=' + languageValue + '&word=' + searchValue);
 	xhr.send();
+}
+
+function onInputChange(event) {
+	const value = event.target.value;
+	if (event.keyCode === 13 && value) {
+		onTranslateBtnClick()
+	} else {
+		const button = document.getElementById('translate');
+		button.disabled = !value;
+	}
+}
+
+function focusInput() {
+	document.getElementById('search').focus();
 }
 
 function saveEditing() {
@@ -69,10 +100,6 @@ function saveEditing() {
 window.onload = () => {
 	document.getElementById('translate').onclick = onTranslateBtnClick;
 	document.getElementById('save-editing').onclick = saveEditing;
+	document.getElementById('search').onkeydown = onInputChange;
+	document.getElementById('language').onchange = focusInput;
 }
-
-
-// var row = document.createElement('tr');
-// row.setAttribute('class', 'entry');
-// row.innerHTML = html;
-// document.getElementById('results').appendChild(row);

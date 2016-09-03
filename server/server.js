@@ -24,8 +24,7 @@ app.listen(3000, function () {
 
 app.get('/getEntry', function(req, res) {
   console.log(req.query);
-
-  Word.find({ eng: 'Won-Won' })
+  Word.find({ [req.query.lang]: new RegExp(req.query.word, 'i') })
     .then(docs => res.json(docs[0]))
     .catch(() => res.send(500));
 });
