@@ -1,21 +1,22 @@
-// var isEditionalOpen = false;
-// function hideElement() {
-// 	var targetBtn = event.target;
-// 	var element = targetBtn.parentElement.parentElement.nextSibling;
-// 	if (isEditionalOpen){
-// 		element.style.display = 'none';
-// 		isEditionalOpen = false;
-// 	} else {
-//     	element.style.display = 'table-row';
-//     	isEditionalOpen = true;
-//     }
-// };
-function showEditingModal(){
-	document.getElementById('editing-modal').style.display = "flex";
+const GLOBAL_ELEMENTS = {};
+
+window.onload = () => {
+	GLOBAL_ELEMENTS.translate = document.getElementById('translate');
+	GLOBAL_ELEMENTS.saveEditing = document.getElementById('save-editing');
+	GLOBAL_ELEMENTS.search = document.getElementById('search');
+	GLOBAL_ELEMENTS.language = document.getElementById('language');
+	GLOBAL_ELEMENTS.closePopup = document.getElementById('close-popup');
+	GLOBAL_ELEMENTS.editingModal = document.getElementById('editing-modal');
+
+	assigneListeners();
 }
 
-function hideEditingModal(){
-	document.getElementById('editing-modal').style.display = "none";
+function assigneListeners() {
+	GLOBAL_ELEMENTS.closePopup.onclick = toggleEditingModal;
+	GLOBAL_ELEMENTS.language.onchange = focusInput;
+	GLOBAL_ELEMENTS.search.onkeydown = onInputChange;
+	GLOBAL_ELEMENTS.saveEditing.onclick = saveEditing;
+	GLOBAL_ELEMENTS.translate.onclick = onTranslateBtnClick;
 }
 
 function addEditingTD(buffer, entry) {
@@ -23,10 +24,10 @@ function addEditingTD(buffer, entry) {
 	const button = document.createElement('button');
 	button.innerHTML = 'Edit';
 	button.addEventListener('click', event => {
-		showEditingModal();
+		toggleEditingModal();
 		const inputs = document.getElementsByClassName('editing-input');
 		const keys = Object.keys(entry);
-		for (let i = 1; i <= keys.length; i++) {
+		for (let i = 1; i < keys.length; i++) {
 			inputs[i - 1].value = entry[keys[i]];
 		}
 	});
@@ -35,11 +36,9 @@ function addEditingTD(buffer, entry) {
 }
 
 function addTranslations(tr, entry) {
-	const template = '<td>' + entry.eng + '</td>' +
-									 '<td>' + entry.ukr + '</td>' +
-									 '<td>' + entry.ger + '</td>' +
-									 '<td>' + entry.pol + '</td>' +
-									 '<td>' + entry.rus + '</td>';
+	const template = `<td>${entry.eng}</td><td>${entry.ukr}</td>` +
+									 `<td>${entry.ger}</td><td>${entry.pol}</td>` +
+									 `<td>${entry.rus}</td>`;
 	tr.innerHTML = template;
 }
 
@@ -54,16 +53,16 @@ function createRow(entry) {
 }
 
 function cleanInput() {
-	const input = document.getElementById('search');
-	input.value = '';
-	input.focus();
-	document.getElementById('translate').disabled = true;
+	GLOBAL_ELEMENTS.search.value = '';
+	GLOBAL_ELEMENTS.search.focus();
+	GLOBAL_ELEMENTS.translate.disabled = true;
 }
 
 function onTranslateBtnClick() {
-	var languageValue = document.getElementById('language').value;
-	var searchValue = document.getElementById('search').value;
-	if (!searchValue) return;
+	var languageValue = GLOBAL_ELEMENTS.language.value;
+	var searchValue = GLOBAL_ELEMENTS.search.value;
+
+	if (!GLOBAL_ELEMENTS.search) return;
 
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener('load', () => {
@@ -82,24 +81,20 @@ function onTranslateBtnClick() {
 function onInputChange(event) {
 	const value = event.target.value;
 	if (event.keyCode === 13 && value) {
-		onTranslateBtnClick()
+		onTranslateBtnClick();
 	} else {
-		const button = document.getElementById('translate');
-		button.disabled = !value;
+		GLOBAL_ELEMENTS.translate.disabled = !value;
 	}
 }
 
 function focusInput() {
-	document.getElementById('search').focus();
+	GLOBAL_ELEMENTS.search.focus();
+}
+
+function toggleEditingModal (){
+	GLOBAL_ELEMENTS.editingModal.classList.toggle('hidden');
 }
 
 function saveEditing() {
-	hideEditingModal();
-}
-
-window.onload = () => {
-	document.getElementById('translate').onclick = onTranslateBtnClick;
-	document.getElementById('save-editing').onclick = saveEditing;
-	document.getElementById('search').onkeydown = onInputChange;
-	document.getElementById('language').onchange = focusInput;
+	toggleEditingModal();
 }

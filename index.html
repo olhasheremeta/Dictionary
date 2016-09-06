@@ -12,7 +12,7 @@
 	<div class="container">
 		<div class="header">
 			<h1>Dictionary of Proper Names</h1>
-			<p>By Olha Sheremeta</p>
+			<p>based on novels by J.K. Rowling</p>
 		</div>
 		<div class="main">
 			<div id="lang">
@@ -23,7 +23,7 @@
 				   <option value="pol">Polish</option>
 				   <option value="rus">Russian </option>
 				 </select>
-				 <input type="text" id="search" placeholder="Start typing a name">
+				 <input type="text" id="search" placeholder="Start typing a name" autofocus>
 				 <button type="submit" id="translate" disabled="true">Translate</button>
 			 </div>
 
@@ -47,7 +47,7 @@
 		</div>
 	</div>
 
-	<div id="editing-modal">
+	<div id="editing-modal" class="hidden">
 		<div class="modal-body">
 			<div class="row">
 				<div class="label">English:</div>
@@ -71,6 +71,7 @@
 			</div>
 			<div class="row buttons">
 				<button id="save-editing">Save</button>
+				<button id="close-popup">Close</button>
 			</div>
 		</div>
 	</div>
