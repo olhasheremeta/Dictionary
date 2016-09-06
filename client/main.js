@@ -7,6 +7,7 @@ window.onload = () => {
 	GLOBAL_ELEMENTS.language = document.getElementById('language');
 	GLOBAL_ELEMENTS.closePopup = document.getElementById('close-popup');
 	GLOBAL_ELEMENTS.editingModal = document.getElementById('editing-modal');
+	GLOBAL_ELEMENTS.results = document.getElementById('results');
 
 	assigneListeners();
 }
@@ -22,12 +23,15 @@ function assigneListeners() {
 function addEditingTD(buffer, entry) {
 	const td = document.createElement('td');
 	const button = document.createElement('button');
+
 	button.innerHTML = 'Edit';
 	button.addEventListener('click', event => {
 		toggleEditingModal();
 		const inputs = document.getElementsByClassName('editing-input');
 		const keys = Object.keys(entry);
+		GLOBAL_ELEMENTS.editingModal.setAttribute('data-id', entry._id);
 		for (let i = 1; i < keys.length; i++) {
+			inputs[i - 1].setAttribute('data-key', keys[i]);
 			inputs[i - 1].value = entry[keys[i]];
 		}
 	});
@@ -44,11 +48,12 @@ function addTranslations(tr, entry) {
 
 function createRow(entry) {
 	const tr = document.createElement('tr');
+	const results = GLOBAL_ELEMENTS.results;
 	const buffer = document.createDocumentFragment();
+
 	addTranslations(tr, entry);
 	addEditingTD(buffer, entry);
 	tr.appendChild(buffer);
-	const results = document.getElementById('results')
 	results.insertBefore(tr, results.childNodes[0]);
 }
 
@@ -95,6 +100,31 @@ function toggleEditingModal (){
 	GLOBAL_ELEMENTS.editingModal.classList.toggle('hidden');
 }
 
+function editEntry(entry) {
+	console.log(entry);
+	var xhr = new XMLHttpRequest();
+	xhr.addEventListener('load', () => {
+		if (xhr.response) {
+			console.log(xhr.response);
+		} else {
+			console.log('Error: we can\'t save this entry now');
+		}
+	});
+	xhr.open('PUT', '/editEntry');
+	xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+	xhr.send(JSON.stringify(entry));
+}
+
 function saveEditing() {
-	toggleEditingModal();
+	const inputs = document.getElementsByClassName('editing-input');
+	const entry = {
+		_id: GLOBAL_ELEMENTS.editingModal.getAttribute('data-id'),
+	}
+	for (let i = 0; i < inputs.length; i++) {
+		const key = inputs[i].getAttribute('data-key');
+		const value = inputs[i].value;
+		entry[key] = value;
+	}
+
+	editEntry(entry);
 }

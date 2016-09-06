@@ -1,7 +1,8 @@
 @font-face {
-    font-family: HarryPotter; /* Имя шрифта */
-    src: url(fonts/LumosLatino.ttf); /* Путь к файлу со шрифтом */
-   }
+  font-family: HarryPotter;
+  src: url(fonts/LumosLatino.ttf);
+}
+
 html, body {
   margin: 0;
   padding: 0;

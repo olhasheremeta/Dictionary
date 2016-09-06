@@ -23,8 +23,23 @@ app.listen(3000, function () {
 });
 
 app.get('/getEntry', function(req, res) {
-  console.log(req.query);
   Word.find({ [req.query.lang]: new RegExp(req.query.word, 'i') })
-    .then(docs => res.json(docs[0]))
+    .then(docs => {
+      console.log(docs[0]);
+      res.json(docs[0])
+    })
     .catch(() => res.send(500));
+});
+
+app.put('/editEntry', function(req, res) {
+  console.log(req.body);
+  Word.update(
+    { _id: req.body._id },
+    { $set: req.body },
+    { upsert: false },
+    function(err) {
+      if (err) return res.send(404);
+      return res.send('updated');
+    }
+  );
 });
