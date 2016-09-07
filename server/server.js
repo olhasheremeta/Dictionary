@@ -24,25 +24,21 @@ app.listen(3000, function () {
 
 app.get('/getEntry', function(req, res) {
   Word.find({ [req.query.lang]: new RegExp(req.query.word, 'i') })
-    .then(docs => {
-      console.log(docs[0]);
-      res.json(docs[0])
-    })
+    .then(docs => res.json(docs[0]))
     .catch(() => res.send(500));
 });
 
 app.put('/editEntry', function(req, res) {
   const { eng, ukr, rus, ger, pol } = req.body;
-  Word.findById(req.body._id, function (err, doc) {
-    if (err) res.send(500);
-    doc.set('eng', eng);
-    doc.set('ukr', ukr);
-    doc.set('rus', rus);
-    doc.set('ger', ger);
-    doc.set('pol', pol);
-    doc.save((err, word) => {
-      if (err) res.send(500);
-      res.send(word);
-    });
-  });
+  Word.findById(req.body._id)
+    .then(doc => {
+      doc.eng = eng;
+      doc.ukr = ukr;
+      doc.rus = rus;
+      doc.ger = ger;
+      doc.pol = pol;
+      return doc.save();
+    })
+    .then((word) => res.send(word))
+    .catch(err => res.send(err));
 });

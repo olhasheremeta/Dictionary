@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
 const wordsSchema = mongoose.Schema({
-  en: String,
-  de: String,
-  pl: String,
-  ru: String,
-  ua: String,
-})
+  eng: String,
+  ger: String,
+  pol: String,
+  rus: String,
+  ukr: String,
+});
 
 module.exports = mongoose.model('words', wordsSchema);

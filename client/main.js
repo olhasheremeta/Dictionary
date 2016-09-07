@@ -101,11 +101,12 @@ function toggleEditingModal (){
 }
 
 function editEntry(entry) {
-	console.log(entry);
 	var xhr = new XMLHttpRequest();
 	xhr.addEventListener('load', () => {
 		if (xhr.response) {
-			console.log(xhr.response);
+			toggleEditingModal();
+			var object = JSON.parse(xhr.response);
+			createRow(object);
 		} else {
 			console.log('Error: we can\'t save this entry now');
 		}
