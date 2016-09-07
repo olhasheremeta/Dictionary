@@ -32,14 +32,17 @@ app.get('/getEntry', function(req, res) {
 });
 
 app.put('/editEntry', function(req, res) {
-  console.log(req.body);
-  Word.update(
-    { _id: req.body._id },
-    { $set: req.body },
-    { upsert: false },
-    function(err) {
-      if (err) return res.send(404);
-      return res.send('updated');
-    }
-  );
+  const { eng, ukr, rus, ger, pol } = req.body;
+  Word.findById(req.body._id, function (err, doc) {
+    if (err) res.send(500);
+    doc.set('eng', eng);
+    doc.set('ukr', ukr);
+    doc.set('rus', rus);
+    doc.set('ger', ger);
+    doc.set('pol', pol);
+    doc.save((err, word) => {
+      if (err) res.send(500);
+      res.send(word);
+    });
+  });
 });
