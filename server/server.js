@@ -14,24 +14,20 @@ mongoose.connect('mongodb://'+ config.user +':' + config.password
 app.use(serveStatic(__dirname + '/../client'));
 app.use(bodyParser.json());
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname + '/../index.html'));
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
-});
-
-app.get('/getEntry', function(req, res) {
+app.get('/getEntry', (req, res) => {
   Word.find({ [req.query.lang]: new RegExp(req.query.word, 'i') })
-    .then(docs => res.json(docs[0]))
+    .then((docs) => res.json(docs[0]))
     .catch(() => res.send(500));
 });
 
-app.put('/editEntry', function(req, res) {
-  const { eng, ukr, rus, ger, pol } = req.body;
-  Word.findById(req.body._id)
-    .then(doc => {
+app.put('/editEntry', (req, res) => {
+  const { _id, eng, ukr, rus, ger, pol } = req.body;
+  Word.findById(_id)
+    .then((doc) => {
       doc.eng = eng;
       doc.ukr = ukr;
       doc.rus = rus;
@@ -40,5 +36,9 @@ app.put('/editEntry', function(req, res) {
       return doc.save();
     })
     .then((word) => res.send(word))
-    .catch(err => res.send(err));
+    .catch(() => res.send(500));
+});
+
+app.listen(3000, () => {
+  console.log('Example app listening on port 3000!');
 });

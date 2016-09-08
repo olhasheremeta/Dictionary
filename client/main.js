@@ -20,6 +20,37 @@ function assigneListeners() {
 	GLOBAL_ELEMENTS.translate.onclick = onTranslateBtnClick;
 }
 
+function onTranslateBtnClick() {
+	const languageValue = GLOBAL_ELEMENTS.language.value;
+	const searchValue = GLOBAL_ELEMENTS.search.value;
+
+	if (!GLOBAL_ELEMENTS.search) return;
+
+	const xhr = new XMLHttpRequest();
+	xhr.addEventListener('load', () => {
+		if (xhr.response) {
+			const object = JSON.parse(xhr.response);
+			createRow(object);
+		} else {
+			console.log('Error: no such an entry in the data base');
+		}
+		cleanInput();
+	});
+	xhr.open('GET', '/getEntry?lang=' + languageValue + '&word=' + searchValue);
+	xhr.send();
+}
+
+function createRow(entry) {
+	const tr = document.createElement('tr');
+	const results = GLOBAL_ELEMENTS.results;
+	const buffer = document.createDocumentFragment();
+
+	addTranslations(tr, entry);
+	addEditingTD(buffer, entry);
+	tr.appendChild(buffer);
+	results.insertBefore(tr, results.childNodes[0]);
+}
+
 function addEditingTD(buffer, entry) {
 	const td = document.createElement('td');
 	const button = document.createElement('button');
@@ -40,47 +71,49 @@ function addEditingTD(buffer, entry) {
 }
 
 function addTranslations(tr, entry) {
-	const template = `<td>${entry.eng}</td><td>${entry.ukr}</td>` +
-									 `<td>${entry.ger}</td><td>${entry.pol}</td>` +
-									 `<td>${entry.rus}</td>`;
-	tr.innerHTML = template;
+	tr.innerHTML = `<td>${entry.eng}</td><td>${entry.ukr}</td>` +
+								 `<td>${entry.ger}</td><td>${entry.pol}</td>` +
+								 `<td>${entry.rus}</td>`;
 }
 
-function createRow(entry) {
-	const tr = document.createElement('tr');
-	const results = GLOBAL_ELEMENTS.results;
-	const buffer = document.createDocumentFragment();
+function saveEditing() {
+	const inputs = document.getElementsByClassName('editing-input');
+	const entry = {
+		_id: GLOBAL_ELEMENTS.editingModal.getAttribute('data-id'),
+	};
+	for (let i = 0; i < inputs.length; i++) {
+		const key = inputs[i].getAttribute('data-key');
+		const value = inputs[i].value;
+		entry[key] = value;
+	}
 
-	addTranslations(tr, entry);
-	addEditingTD(buffer, entry);
-	tr.appendChild(buffer);
-	results.insertBefore(tr, results.childNodes[0]);
+	editEntry(entry);
+}
+
+function editEntry(entry) {
+	const xhr = new XMLHttpRequest();
+	xhr.addEventListener('load', () => {
+		if (xhr.response) {
+			toggleEditingModal();
+			const object = JSON.parse(xhr.response);
+			createRow(object);
+		} else {
+			console.log('Error: we can\'t save this entry now');
+		}
+	});
+	xhr.open('PUT', '/editEntry');
+	xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+	xhr.send(JSON.stringify(entry));
+}
+
+function toggleEditingModal () {
+	GLOBAL_ELEMENTS.editingModal.classList.toggle('hidden');
 }
 
 function cleanInput() {
 	GLOBAL_ELEMENTS.search.value = '';
 	GLOBAL_ELEMENTS.search.focus();
 	GLOBAL_ELEMENTS.translate.disabled = true;
-}
-
-function onTranslateBtnClick() {
-	var languageValue = GLOBAL_ELEMENTS.language.value;
-	var searchValue = GLOBAL_ELEMENTS.search.value;
-
-	if (!GLOBAL_ELEMENTS.search) return;
-
-	var xhr = new XMLHttpRequest();
-	xhr.addEventListener('load', () => {
-		if (xhr.response) {
-			var object = JSON.parse(xhr.response);
-			createRow(object);
-		} else {
-			console.log('Error: no such an entry in the data base');
-		}
-		cleanInput();
-	});
-	xhr.open('GET', '/getEntry?lang=' + languageValue + '&word=' + searchValue);
-	xhr.send();
 }
 
 function onInputChange(event) {
@@ -94,38 +127,4 @@ function onInputChange(event) {
 
 function focusInput() {
 	GLOBAL_ELEMENTS.search.focus();
-}
-
-function toggleEditingModal (){
-	GLOBAL_ELEMENTS.editingModal.classList.toggle('hidden');
-}
-
-function editEntry(entry) {
-	var xhr = new XMLHttpRequest();
-	xhr.addEventListener('load', () => {
-		if (xhr.response) {
-			toggleEditingModal();
-			var object = JSON.parse(xhr.response);
-			createRow(object);
-		} else {
-			console.log('Error: we can\'t save this entry now');
-		}
-	});
-	xhr.open('PUT', '/editEntry');
-	xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-	xhr.send(JSON.stringify(entry));
-}
-
-function saveEditing() {
-	const inputs = document.getElementsByClassName('editing-input');
-	const entry = {
-		_id: GLOBAL_ELEMENTS.editingModal.getAttribute('data-id'),
-	}
-	for (let i = 0; i < inputs.length; i++) {
-		const key = inputs[i].getAttribute('data-key');
-		const value = inputs[i].value;
-		entry[key] = value;
-	}
-
-	editEntry(entry);
 }

@@ -84,6 +84,7 @@ table {
   background-color: rgba(51, 153, 255, 0.4);
   width: 100%;
   text-align: center;
+  color: #ffffb3;
 }
 
 #editing-modal {
